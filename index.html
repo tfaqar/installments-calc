@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>حاسبة الأقساط الشاملة</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-start;
+            padding: 20px; 
+            background: #eef2f3; 
+            margin: 0;
+            min-height: 100vh;
+        }
+        
+        .calc-card { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 15px; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1); 
+            width: 100%; 
+            max-width: 450px; 
+            box-sizing: border-box;
+        }
+
+        h2 { 
+            text-align: center; 
+            color: #2c3e50; 
+            margin-bottom: 20px; 
+            font-size: 20px; 
+            border-bottom: 2px solid #3498db; 
+            padding-bottom: 10px; 
+        }
+        
+        .input-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #34495e; font-size: 14px; }
+        
+        input { 
+            width: 100%; 
+            padding: 15px; 
+            border: 2px solid #bdc3c7; 
+            border-radius: 10px; 
+            box-sizing: border-box; 
+            font-size: 20px; 
+            text-align: center; 
+            -webkit-appearance: none;
+        }
+        
+        input:focus { outline: none; border-color: #3498db; background: #fdfdfd; }
+        
+        .button-group { display: flex; flex-direction: column; gap: 10px; }
+        
+        button { 
+            width: 100%; 
+            padding: 16px; 
+            border: none; 
+            border-radius: 10px; 
+            font-size: 18px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: all 0.2s;
+            touch-action: manipulation;
+        }
+        
+        .btn-calc { background: #3498db; color: white; }
+        
+        /* Copy button base state */
+        .btn-copy { background: #27ae60; color: white; }
+        
+        /* Highlight state when copied */
+        .btn-copy.success { background: #1e8449; transform: scale(0.98); }
+
+        .results-container { margin-top: 20px; display: flex; flex-direction: column; gap: 8px; }
+        
+        .result-box { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 15px; 
+            background: #f8f9fa; 
+            border: 1px solid #dee2e6; 
+            border-radius: 10px; 
+        }
+        
+        .result-title { font-weight: bold; color: #555; font-size: 15px; }
+        .result-value { font-size: 22px; font-weight: bold; color: #e74c3c; }
+    </style>
+</head>
+<body>
+
+<div class="calc-card">
+    <h2>حاسبة الأقساط الشاملة</h2>
+    
+    <div class="input-group">
+        <label>سعر المنتج</label>
+        <input type="text" id="priceInput" placeholder="أدخل السعر هنا..." inputmode="numeric" autocomplete="off">
+    </div>
+
+    <div class="button-group">
+        <button type="button" class="btn-calc" onclick="calculateAll()">احسب الأقساط</button>
+        <button type="button" class="btn-copy" id="copyBtn" onclick="copyResults()">نسخ النتائج</button>
+    </div>
+
+    <div class="results-container">
+        <div class="result-box">
+            <span class="result-title">قسط 24 شهر:</span>
+            <span class="result-value" id="out24">0</span>
+        </div>
+        <div class="result-box">
+            <span class="result-title">قسط 18 شهر:</span>
+            <span class="result-value" id="out18">0</span>
+        </div>
+        <div class="result-box">
+            <span class="result-title">قسط 12 شهر:</span>
+            <span class="result-value" id="out12">0</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('priceInput').addEventListener('input', function(e) {
+        let rawValue = this.value.replace(/[^0-9]/g, '');
+        if (rawValue !== '') {
+            this.value = parseInt(rawValue, 10).toLocaleString('en-US');
+        } else {
+            this.value = '';
+        }
+    });
+
+    function calculateAll() {
+        let rawInput = document.getElementById('priceInput').value.replace(/,/g, '');
+        const price = parseFloat(rawInput) || 0;
+        if (price === 0) return;
+
+        const roundTo500 = (num) => Math.ceil(num / 500) * 500;
+
+        document.getElementById('out24').innerText = roundTo500((price / 150 * 260) / 24).toLocaleString('en-US');
+        document.getElementById('out18').innerText = roundTo500((price / 150 * 235) / 18).toLocaleString('en-US');
+        document.getElementById('out12').innerText = roundTo500((price / 150 * 210) / 12).toLocaleString('en-US');
+    }
+
+    function copyResults() {
+        const p24 = document.getElementById('out24').innerText;
+        const p18 = document.getElementById('out18').innerText;
+        const p12 = document.getElementById('out12').innerText;
+        const btn = document.getElementById('copyBtn');
+
+        if(p24 === "0") return;
+
+        const text = `نتائج الأقساط:\n- قسط 24 شهر: ${p24}\n- قسط 18 شهر: ${p18}\n- قسط 12 شهر: ${p12}`;
+        
+        navigator.clipboard.writeText(text).then(() => {
+            // Visual highlight logic
+            const originalText = btn.innerText;
+            btn.innerText = "تم النسخ! ✓";
+            btn.classList.add('success');
+            
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.classList.remove('success');
+            }, 1000); // Revert after 1 second
+        });
+    }
+</script>
+
+</body>
+</html>
