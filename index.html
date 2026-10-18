@@ -106,6 +106,14 @@
 
     <div class="results-container">
         <div class="result-box">
+            <span class="result-title">قسط 36 شهر:</span>
+            <span class="result-value" id="out36">0</span>
+        </div>
+        <div class="result-box">
+            <span class="result-title">قسط 30 شهر:</span>
+            <span class="result-value" id="out30">0</span>
+        </div>
+        <div class="result-box">
             <span class="result-title">قسط 24 شهر:</span>
             <span class="result-value" id="out24">0</span>
         </div>
@@ -137,20 +145,24 @@
 
         const roundTo500 = (num) => Math.ceil(num / 500) * 500;
 
+        document.getElementById('out36').innerText = roundTo500((price / 150 * 300) / 36).toLocaleString('en-US');
+        document.getElementById('out30').innerText = roundTo500((price / 150 * 280) / 30).toLocaleString('en-US');
         document.getElementById('out24').innerText = roundTo500((price / 150 * 260) / 24).toLocaleString('en-US');
         document.getElementById('out18').innerText = roundTo500((price / 150 * 235) / 18).toLocaleString('en-US');
         document.getElementById('out12').innerText = roundTo500((price / 150 * 210) / 12).toLocaleString('en-US');
     }
 
     function copyResults() {
+        const p36 = document.getElementById('out36').innerText;
+        const p30 = document.getElementById('out30').innerText;
         const p24 = document.getElementById('out24').innerText;
         const p18 = document.getElementById('out18').innerText;
         const p12 = document.getElementById('out12').innerText;
         const btn = document.getElementById('copyBtn');
 
-        if(p24 === "0") return;
+        if(p36 === "0") return;
 
-        const text = `نتائج الأقساط:\n- قسط 24 شهر: ${p24}\n- قسط 18 شهر: ${p18}\n- قسط 12 شهر: ${p12}`;
+        const text = `نتائج الأقساط:\n- قسط 36 شهر: ${p36}\n- قسط 30 شهر: ${p30}\n- قسط 24 شهر: ${p24}\n- قسط 18 شهر: ${p18}\n- قسط 12 شهر: ${p12}`;
         
         navigator.clipboard.writeText(text).then(() => {
             // Visual highlight logic
